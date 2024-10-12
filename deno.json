@@ -1,0 +1,11 @@
+{
+  "tasks": {
+    "dev": "deno run --watch main.ts"
+  },
+  "imports": {
+    "@gizmo/http-status": "jsr:@gizmo/http-status@^1.0.0",
+    "@std/collections": "jsr:@std/collections@^1.0.8",
+    "argparse": "npm:argparse@^2.0.1",
+    "chalk": "npm:chalk@^5.3.0"
+  }
+}
