@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "dev": "deno run --watch main.ts"
+    "start": "deno run --allow-all src/main.ts"
   },
   "imports": {
     "@gizmo/http-status": "jsr:@gizmo/http-status@^1.0.0",
