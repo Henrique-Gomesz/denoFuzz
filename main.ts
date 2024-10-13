@@ -3,9 +3,10 @@ import { parseArgs } from "./src/utils/arg-parser.ts";
 import { executeWorkers } from "./src/utils/execute-workers.ts";
 import { printBanner } from "./src/utils/print-banner.ts";
 import { readFile } from "./src/utils/read-file.ts";
-
-printBanner() 
+console.time("Execution Time");
+printBanner();
 const args = parseArgs();
 const wordlist = readFile(args.wordlist);
-console.log(chalk.italic.blueBright(`Starting!`));
-executeWorkers(args,wordlist)
+console.log(wordlist.length, "Wordlist size");
+console.log(chalk.italic.blueBright(`Fuzzing!`));
+executeWorkers(args, wordlist);

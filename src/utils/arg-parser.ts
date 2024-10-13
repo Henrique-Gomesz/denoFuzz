@@ -1,5 +1,5 @@
 import { ArgumentParser } from "argparse";
-import { VERSION } from "./constants.ts"
+import { VERSION } from "./constants.ts";
 
 export type Args = {
   wordlist: string;
@@ -10,7 +10,7 @@ export type Args = {
 
 export function parseArgs(): Args {
   const parser = new ArgumentParser({
-    description: "Deno fuzzer",
+    description: "denoFuzz",
   });
 
   parser.add_argument("-v", "--version", {
@@ -37,7 +37,6 @@ export function parseArgs(): Args {
     required: true,
     type: "str",
   });
-
 
   return parser.parse_args() as Args;
 }

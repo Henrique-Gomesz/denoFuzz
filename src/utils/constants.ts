@@ -15,4 +15,4 @@ export const BANNER = `
 
                         by: Henrique-Gomesz
                                v${VERSION}
-`
+`;

@@ -1,7 +1,6 @@
 # denoFuzz
 
-A simple web fuzzer build with TS and Deno
-
+A web fuzzer made with TS and Deno
 
 ```sh
 ▓█████▄ ▓█████  ███▄    █  ▒█████    █████▒█    ██ ▒███████▒▒███████▒
@@ -41,18 +40,29 @@ optional arguments:
 ## Installation
 
 1. Clone the repository:
-    ```sh
-    git clone https://github.com/Henrique-Gomesz/denoFuzz
-    cd denoFuzz
-    ```
+   ```sh
+   git clone https://github.com/Henrique-Gomesz/denoFuzz
+   cd denoFuzz
+   ```
 
 2. Install the dependencies:
-    ```sh
-    deno cache src/main.ts
-    ```
+   ```sh
+   deno cache src/main.ts
+   ```
 
 ## Usage
 
 To start the project, run the following command:
+
 ```sh
 deno run start main.ts [-h] [-v] [-m METHOD] [-t THREADS] -u URL -w WORDLIST
+```
+
+## To-do list
+
+- Create output flag
+- Validate inputs formats
+- Ceate headers flag
+- Create status response filter flag
+- Create extension flag
+- Fix progress counter display

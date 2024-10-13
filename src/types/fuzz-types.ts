@@ -6,12 +6,12 @@ export enum FuzzWorkerMessageType {
 export interface FuzzWorkerMessage {
   url: string;
   wordlist: string[];
-  method:string
+  method: string;
 }
 
 export interface FuzzWorkerResponse {
   status: number;
   word: string;
   url: string;
-  method:string
+  method: string;
 }

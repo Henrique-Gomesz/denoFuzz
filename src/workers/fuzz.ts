@@ -1,47 +1,39 @@
-import chalk from "chalk";
-import { FuzzWorkerMessageType, type FuzzWorkerMessage, type FuzzWorkerResponse } from "../types/fuzz-types.ts";
-import {HttpStatus} from '@gizmo/http-status'
+import { HttpStatus } from "@gizmo/http-status";
+import {
+  type FuzzWorkerMessage,
+  FuzzWorkerMessageType,
+  type FuzzWorkerResponse,
+} from "../types/fuzz-types.ts";
 const ctx = self as unknown as Worker;
 
 ctx.onmessage = async (
-  event: MessageEvent<FuzzWorkerMessage>
+  event: MessageEvent<FuzzWorkerMessage>,
 ): Promise<void> => {
-  const { url, wordlist,method } = event.data;
+  const { url, wordlist, method } = event.data;
 
   for (const word of wordlist) {
+    const targetUrl = `${url}/${word}`;
     try {
-      const targetUrl = `${url}/${word}`
-      const response = await fetch(targetUrl,{method});
+      const response = await fetch(targetUrl, { method });
       const workerResponse: FuzzWorkerResponse = {
         status: response.status,
         word: word,
         url: targetUrl,
-        method:method
+        method: method,
       };
-  
-      printResponse(workerResponse);
+
       ctx.postMessage(workerResponse);
-    } catch (error) {
-      console.log(chalk.redBright(`Response error: ${error}`));
+    } catch (_) {
+      const workerResponse: FuzzWorkerResponse = {
+        status: HttpStatus.ServiceUnavailable.valueOf(),
+        word: word,
+        url: targetUrl,
+        method: method,
+      };
+      ctx.postMessage(workerResponse);
     }
   }
   ctx.postMessage(FuzzWorkerMessageType.finish);
 };
 
-function printResponse(response: FuzzWorkerResponse) {
-  const message = `(${response.method} ${response.status}) ${response.url}`
-
-  switch(response.status){
-      case HttpStatus.OK:
-          console.log(chalk.green(message))
-          break;
-      case HttpStatus.NotFound:
-          console.log(chalk.red(message))
-          break;
-      default:
-          console.log(chalk.yellow(message))
-          break;
-  }
-}
-
-export {}
+export {};
