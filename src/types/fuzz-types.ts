@@ -1,12 +1,13 @@
+import type { Args } from "../utils/arg-parser.ts";
+
 export enum FuzzWorkerMessageType {
   start = "start",
   finish = "finish",
 }
 
 export interface FuzzWorkerMessage {
-  url: string;
+  args: Args;
   wordlist: string[];
-  method: string;
 }
 
 export interface FuzzWorkerResponse {

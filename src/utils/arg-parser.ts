@@ -1,4 +1,11 @@
 import { ArgumentParser } from "argparse";
+import {
+  checkIfFileExists,
+  vaildateThreads,
+  validateHttpMethod,
+  validateStatusCodeList,
+  validateUrl,
+} from "./args-value-validators.ts";
 import { VERSION } from "./constants.ts";
 
 export type Args = {
@@ -6,6 +13,8 @@ export type Args = {
   url: string;
   method: string;
   threads: number;
+  status_filter: number[];
+  extensions: string[];
 };
 
 export function parseArgs(): Args {
@@ -18,8 +27,13 @@ export function parseArgs(): Args {
     version: VERSION,
   });
   parser.add_argument("-m", "--method", {
-    help: "HTTP method to use",
+    help: "HTTP method to use (Default: GET)",
     default: "GET",
+    type: "str",
+  });
+  parser.add_argument("-H", "--headers", {
+    help: "Headers to be sent with the request",
+    default: "",
     type: "str",
   });
   parser.add_argument("-t", "--threads", {
@@ -27,8 +41,21 @@ export function parseArgs(): Args {
     type: "int",
     default: 50,
   });
+  parser.add_argument("-ext", "--extensions", {
+    help: "File extensions to be appended to the wordlist",
+    type: "str",
+    nargs: "+",
+    default: [],
+  });
+  parser.add_argument("-sf", "--status-filter", {
+    help:
+      "List of response status code to be filtered (default: 200,204,301,302,307,401,403,405,500)",
+    nargs: "+",
+    type: "int",
+    default: [200, 204, 301, 302, 307, 401, 403, 405, 500],
+  });
   parser.add_argument("-u", "--url", {
-    help: "Url to fuzz",
+    help: "Http or https url to fuzz (example: http://example.com/FUZZ)",
     required: true,
     type: "str",
   });
@@ -38,5 +65,19 @@ export function parseArgs(): Args {
     type: "str",
   });
 
-  return parser.parse_args() as Args;
+  const args = parser.parse_args() as Args;
+  validateArgsValues(args);
+
+  return args;
+}
+
+function validateArgsValues(args: Args) {
+  if (
+    !checkIfFileExists(args.wordlist) || !validateUrl(args.url) ||
+    !vaildateThreads(args.threads) ||
+    !validateStatusCodeList(args.status_filter) ||
+    !validateHttpMethod(args.method)
+  ) {
+    Deno.exit(1);
+  }
 }

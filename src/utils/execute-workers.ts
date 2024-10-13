@@ -12,16 +12,17 @@ import { stdout } from "node:process";
 
 let counter = 1;
 let wordlistSize = 0;
+let userArgs: Args;
 
 export function executeWorkers(args: Args, wordlist: string[]) {
+  userArgs = args;
   wordlistSize = wordlist.length;
   const wordsPerWorker = Math.ceil(wordlist.length / args.threads);
   const chunkedWordLIst = chunk(wordlist, wordsPerWorker);
 
   chunkedWordLIst.forEach((item) => {
     const message: FuzzWorkerMessage = {
-      method: args.method,
-      url: args.url,
+      args,
       wordlist: item,
     };
 
@@ -44,17 +45,15 @@ export function fuzzMessageHandler(
     return this.terminate();
   }
 
-  printResponse(e.data);
+  if (shouldPrintResponse(e.data)) {
+    printResponse(e.data);
+  }
+  printProgress();
   counter++;
 }
 
-function printResponse(response: FuzzWorkerResponse) {
-  // if(response.status === HttpStatus.ServiceUnavailable || response.status === HttpStatus.NotFound) {
-  //   return
-  // }
-
+function printResponse(response: FuzzWorkerResponse): void {
   const message = `[${response.method} ${response.status}] ${response.url}\n`;
-  const progress = `Progress: [${counter}/${wordlistSize}]\r`;
   saveResultsToFile(message, "./results.txt");
   switch (response.status) {
     case HttpStatus.OK:
@@ -70,9 +69,12 @@ function printResponse(response: FuzzWorkerResponse) {
       stdout.write(chalk.yellow(message));
       break;
   }
+}
+
+function printProgress(): void {
+  const progress = `Progress: [${counter}/${wordlistSize}]\r`;
 
   if (counter === wordlistSize) {
-    stdout.write(chalk.blueBright(`\n${progress}`));
     stdout.write(chalk.cyan("\nFinished!\n"));
     console.timeEnd("Execution Time");
   } else {
@@ -88,4 +90,8 @@ function saveResultsToFile(message: string, filePath: string): void {
   } catch (error) {
     console.error(chalk.red("Error saving results to file:"), error);
   }
+}
+
+function shouldPrintResponse(response: FuzzWorkerResponse): boolean {
+  return userArgs.status_filter.includes(response.status);
 }
