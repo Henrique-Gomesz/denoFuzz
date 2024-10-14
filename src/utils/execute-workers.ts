@@ -9,8 +9,9 @@ import { FUZZ_WORKER_PATH } from "./constants.ts";
 import { HttpStatus } from "@gizmo/http-status";
 import chalk from "chalk";
 import { stdout } from "node:process";
+import type { FileOutputType } from "../types/file-output-type.ts";
 
-let counter = 1;
+let counter = 0;
 let wordlistSize = 0;
 let userArgs: Args;
 
@@ -47,14 +48,16 @@ export function fuzzMessageHandler(
 
   if (shouldPrintResponse(e.data)) {
     printResponse(e.data);
+    if (userArgs.output) {
+      saveResultsToFile(e.data, userArgs.output);
+    }
   }
-  printProgress();
   counter++;
+  printProgress();
 }
 
 function printResponse(response: FuzzWorkerResponse): void {
   const message = `[${response.method} ${response.status}] ${response.url}\n`;
-  saveResultsToFile(message, "./results.txt");
   switch (response.status) {
     case HttpStatus.OK:
       stdout.write(chalk.green(message));
@@ -74,19 +77,22 @@ function printResponse(response: FuzzWorkerResponse): void {
 function printProgress(): void {
   const progress = `Progress: [${counter}/${wordlistSize}]\r`;
 
+  stdout.write(chalk.blueBright(progress));
   if (counter === wordlistSize) {
     stdout.write(chalk.cyan("\nFinished!\n"));
-    console.timeEnd("Execution Time");
-  } else {
-    stdout.write(chalk.blueBright(progress));
+    console.timeEnd(chalk.cyan("Execution Time"));
   }
 }
 
-function saveResultsToFile(message: string, filePath: string): void {
+function saveResultsToFile(message: FileOutputType, filePath: string): void {
   try {
-    Deno.writeFileSync(filePath, new TextEncoder().encode(message), {
-      append: true,
-    });
+    Deno.writeFileSync(
+      filePath,
+      new TextEncoder().encode(JSON.stringify(message)),
+      {
+        append: true,
+      },
+    );
   } catch (error) {
     console.error(chalk.red("Error saving results to file:"), error);
   }

@@ -19,6 +19,29 @@ export function checkIfFileExists(path: string): boolean {
   }
 }
 
+export function canWriteFile(path?: string): boolean {
+  if (!path) return true;
+
+  try {
+    Deno.writeTextFileSync(path, "test", { create: true, append: true });
+    Deno.truncateSync(path);
+    return true;
+  } catch (error) {
+    if (error instanceof Deno.errors.PermissionDenied) {
+      console.log(
+        chalk.redBright(
+          `Permission denied: Cannot write to path ${chalk.yellow(path)}\n`,
+        ),
+      );
+    } else {
+      console.log(
+        chalk.redBright(`Error to write file at path: ${chalk.yellow(path)}\n`),
+      );
+    }
+    return false;
+  }
+}
+
 export function validateUrl(url: string): boolean {
   const urlRegex =
     /^(https?:\/\/)?((([a-zA-Z\d]([a-zA-Z\d-]{0,61}[a-zA-Z\d])?)\.)+[a-zA-Z]{2,6}|localhost|(\d{1,3}\.){3}\d{1,3})(:\d+)?(\/[-a-zA-Z\d%_.~+]*)*(\?[;&a-zA-Z\d%_.~+=-]*)?(#[-a-zA-Z\d_]*)?$/i;
@@ -66,6 +89,26 @@ export function validateHttpMethod(method: string): boolean {
 
   if (!httpMethods.includes(method.toUpperCase())) {
     console.log(chalk.redBright("Invalid HTTP method\n"));
+    return false;
+  }
+
+  return true;
+}
+
+export function validateHeaders(headers: string) {
+  if (headers === "") {
+    return true;
+  }
+
+  const headerRegex =
+    /^([A-Za-z\-]+):\s*([^,]+)(?:,\s*([A-Za-z\-]+):\s*([^,]+))*$/;
+
+  if (!headerRegex.test(headers)) {
+    console.log(
+      chalk.redBright(
+        "Headers should be in the format 'Header: Value, Header-value: Value2'\n",
+      ),
+    );
     return false;
   }
 

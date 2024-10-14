@@ -1,7 +1,9 @@
 import { ArgumentParser } from "argparse";
 import {
+  canWriteFile,
   checkIfFileExists,
   vaildateThreads,
+  validateHeaders,
   validateHttpMethod,
   validateStatusCodeList,
   validateUrl,
@@ -15,6 +17,8 @@ export type Args = {
   threads: number;
   status_filter: number[];
   extensions: string[];
+  headers: string;
+  output?: string;
 };
 
 export function parseArgs(): Args {
@@ -49,10 +53,14 @@ export function parseArgs(): Args {
   });
   parser.add_argument("-sf", "--status-filter", {
     help:
-      "List of response status code to be filtered (default: 200,204,301,302,307,401,403,405,500)",
+      "List of response status code to be filtered (default: 200,204,301,302,307,401,403,405,500,503)",
     nargs: "+",
     type: "int",
-    default: [200, 204, 301, 302, 307, 401, 403, 405, 500],
+    default: [200, 204, 301, 302, 307, 401, 403, 405, 500, 503],
+  });
+  parser.add_argument("-o", "--output", {
+    help: "Output file to save the results",
+    type: "str",
   });
   parser.add_argument("-u", "--url", {
     help: "Http or https url to fuzz (example: http://example.com/FUZZ)",
@@ -76,7 +84,9 @@ function validateArgsValues(args: Args) {
     !checkIfFileExists(args.wordlist) || !validateUrl(args.url) ||
     !vaildateThreads(args.threads) ||
     !validateStatusCodeList(args.status_filter) ||
-    !validateHttpMethod(args.method)
+    !validateHttpMethod(args.method) ||
+    !validateHeaders(args.headers) ||
+    !canWriteFile(args.output)
   ) {
     Deno.exit(1);
   }

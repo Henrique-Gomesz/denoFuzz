@@ -60,7 +60,7 @@ optional arguments:
    ```
 3. Use:
    ```sh
-   deno run start main.ts main.ts -u http://google.com/FUZZ -w /path/to/wordlist.txt
+   deno run start -u http://google.com/FUZZ -w /path/to/wordlist.txt
    ```
 
 ## Usage
@@ -68,17 +68,19 @@ optional arguments:
 To start the project, run the following command:
 
 ```sh
-# Requests with custom amount of threads
-deno run start main.ts -u http://google.com/FUZZ -w /path/to/wordlist.txt -t 100
+# Requests with custom amount of threads.
+deno run start -u http://google.com/FUZZ -w /path/to/wordlist.txt -t 100
 
-# Requests with authorization header.
-deno run start main.ts -u  http://google.com/FUZZ -w /path/to/wordlist.txt -H "Authorization: Bearer YOUR_ACCESS_TOKEN,User-Agent: MyCustomUserAgent/1.0"
+# Requests with custom authorization headers.
+deno run start -u  http://google.com/FUZZ -w /path/to/wordlist.txt -H "Authorization: Bearer YOUR_ACCESS_TOKEN,User-Agent: MyCustomUserAgent/1.0"
 
 # Allow display only requests with matcher response status code.
-deno run start main.ts -u  http://google.com/FUZZ -w /path/to/wordlist.txt -sf 200 203
+deno run start -u  http://google.com/FUZZ -w /path/to/wordlist.txt -sf 200 203
+
+# Write output file with the request.
+deno run start -u  http://google.com/FUZZ -w /path/to/wordlist.txt -o /tmp/fuzz.txt
 ```
 
 ## To-do list
 
-- Create output flag
-- Ceate headers flag
+- Improve output format

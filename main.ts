@@ -5,7 +5,7 @@ import { printBanner } from "./src/utils/print-banner.ts";
 import { readFile } from "./src/utils/read-file.ts";
 import { printFuzzDetails } from "./src/utils/print-fuzz-details.ts";
 
-console.time("Execution Time");
+console.time(chalk.cyan("Execution Time"));
 printBanner();
 const args = parseArgs();
 const wordlist = readFile(args.wordlist);
