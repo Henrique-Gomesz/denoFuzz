@@ -63,7 +63,7 @@ optional arguments:
 
 ## Usage
 
-To start the project, run the following command:
+Usage examples:
 
 ```sh
 # Requests with custom amount of threads.
