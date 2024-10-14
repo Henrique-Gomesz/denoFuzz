@@ -5,21 +5,19 @@ A web fuzzer made with TS and Deno
 ```sh
 ▓█████▄ ▓█████  ███▄    █  ▒█████    █████▒█    ██ ▒███████▒▒███████▒
 ▒██▀ ██▌▓█   ▀  ██ ▀█   █ ▒██▒  ██▒▓██   ▒ ██  ▓██▒▒ ▒ ▒ ▄▀░▒ ▒ ▒ ▄▀░
-░██   █▌▒███   ▓██  ▀█ ██▒▒██░  ██▒▒████ ░▓██  ▒██░░ ▒ ▄▀▒░ ░ ▒ ▄▀▒░
+░██   █▌▒███   ▓██  ▀█ ██▒▒██░  ██▒▒████ ░▓██  ▒██░░ ▒ ▄▀▒░ ░ ▒ ▄▀▒░ 
 ░▓█▄   ▌▒▓█  ▄ ▓██▒  ▐▌██▒▒██   ██░░▓█▒  ░▓▓█  ░██░  ▄▀▒   ░  ▄▀▒   ░
 ░▒████▓ ░▒████▒▒██░   ▓██░░ ████▓▒░░▒█░   ▒▒█████▓ ▒███████▒▒███████▒
  ▒▒▓  ▒ ░░ ▒░ ░░ ▒░   ▒ ▒ ░ ▒░▒░▒░  ▒ ░   ░▒▓▒ ▒ ▒ ░▒▒ ▓░▒░▒░▒▒ ▓░▒░▒
  ░ ▒  ▒  ░ ░  ░░ ░░   ░ ▒░  ░ ▒ ▒░  ░     ░░▒░ ░ ░ ░░▒ ▒ ░ ▒░░▒ ▒ ░ ▒
  ░ ░  ░    ░      ░   ░ ░ ░ ░ ░ ▒   ░ ░    ░░░ ░ ░ ░ ░ ░ ░ ░░ ░ ░ ░ ░
-   ░       ░  ░         ░     ░ ░            ░       ░ ░      ░ ░
- ░                                                 ░        ░
+   ░       ░  ░         ░     ░ ░            ░       ░ ░      ░ ░    
+ ░                                                 ░        ░      
 
                         by: Henrique-Gomesz
                                v0.0.1
 
-usage: main.ts [-h] [-v] [-m METHOD] [-H HEADERS] [-t THREADS]
-               [-ext EXTENSIONS [EXTENSIONS ...]]
-               [-sf STATUS_FILTER [STATUS_FILTER ...]] -u URL -w WORDLIST
+usage: main.ts [-h] [-v] [-m METHOD] [-H HEADERS] [-t THREADS] [-ext EXTENSIONS [EXTENSIONS ...]] [-sf STATUS_FILTER [STATUS_FILTER ...]] [-o OUTPUT] -u URL -w WORDLIST
 
 denoFuzz
 
@@ -35,10 +33,10 @@ optional arguments:
   -ext EXTENSIONS [EXTENSIONS ...], --extensions EXTENSIONS [EXTENSIONS ...]
                         File extensions to be appended to the wordlist
   -sf STATUS_FILTER [STATUS_FILTER ...], --status-filter STATUS_FILTER [STATUS_FILTER ...]
-                        List of response status code to be filtered (default:
-                        200,204,301,302,307,401,403,405,500)
-  -u URL, --url URL     Http or https url to fuzz (example:
-                        http://example.com/FUZZ)
+                        List of response status code to be filtered (default: 200,204,301,302,307,401,403,405,500,503)
+  -o OUTPUT, --output OUTPUT
+                        Output file to save the results
+  -u URL, --url URL     Http or https url to fuzz (example: http://example.com/FUZZ)
   -w WORDLIST, --wordlist WORDLIST
                         Path to wordlist
 ```
