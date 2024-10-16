@@ -2,6 +2,8 @@
 
 A web fuzzer made with TS and Deno
 
+![](https://raw.githubusercontent.com/Henrique-Gomesz/denoFuzz/refs/heads/main/denoFuzz.webp)
+
 ```sh
 ▓█████▄ ▓█████  ███▄    █  ▒█████    █████▒█    ██ ▒███████▒▒███████▒
 ▒██▀ ██▌▓█   ▀  ██ ▀█   █ ▒██▒  ██▒▓██   ▒ ██  ▓██▒▒ ▒ ▒ ▄▀░▒ ▒ ▒ ▄▀░
