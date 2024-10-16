@@ -9,30 +9,37 @@ import { FUZZ_WORKER_PATH } from "./constants.ts";
 import { HttpStatus } from "@gizmo/http-status";
 import chalk from "chalk";
 import { stdout } from "node:process";
-import type { FileOutputType } from "../types/file-output-type.ts";
+import type {
+  FileOutputType,
+  FileRequestItemOutput,
+} from "../types/file-output-type.ts";
+import { VERSION } from "./constants.ts";
 
 let counter = 0;
 let wordlistSize = 0;
 let userArgs: Args;
+let animationFrame: number = 0;
 
 export function executeWorkers(args: Args, wordlist: string[]) {
   userArgs = args;
   wordlistSize = wordlist.length;
   const wordsPerWorker = Math.ceil(wordlist.length / args.threads);
   const chunkedWordLIst = chunk(wordlist, wordsPerWorker);
+  const workerUrl = new URL(FUZZ_WORKER_PATH, import.meta.url).href;
 
-  chunkedWordLIst.forEach((item) => {
+  for (let i = 0; i < chunkedWordLIst.length; i++) {
+    const item = chunkedWordLIst[i];
     const message: FuzzWorkerMessage = {
       args,
       wordlist: item,
     };
 
-    const worker = new Worker(new URL(FUZZ_WORKER_PATH, import.meta.url).href, {
+    const worker = new Worker(workerUrl, {
       type: "module",
     });
     worker.onmessage = fuzzMessageHandler;
     worker.postMessage(message);
-  });
+  }
 }
 
 export function fuzzMessageHandler(
@@ -74,8 +81,17 @@ function printResponse(response: FuzzWorkerResponse): void {
   }
 }
 
+function getLoadingAnimation(): string {
+  const frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
+  if (animationFrame === frames.length) {
+    animationFrame = 0;
+  }
+  return frames[animationFrame++];
+}
+
 function printProgress(): void {
-  const progress = `Progress: [${counter}/${wordlistSize}]\r`;
+  const progress =
+    `${getLoadingAnimation()} Progress: [${counter}/${wordlistSize}]\r`;
 
   stdout.write(chalk.blueBright(progress));
   if (counter === wordlistSize) {
@@ -83,21 +99,45 @@ function printProgress(): void {
     console.timeEnd(chalk.cyan("Execution Time"));
   }
 }
+function saveResultsToFile(
+  message: FileRequestItemOutput,
+  filePath: string,
+): void {
+  let existingData: FileOutputType = {
+    createdAt: new Date().toISOString(),
+    version: `denoFuzz v${VERSION}`,
+    requests: [],
+  };
 
-function saveResultsToFile(message: FileOutputType, filePath: string): void {
   try {
-    Deno.writeFileSync(
-      filePath,
-      new TextEncoder().encode(JSON.stringify(message)),
-      {
-        append: true,
-      },
-    );
+    const fileContent = Deno.readFileSync(filePath);
+    try {
+      existingData = JSON.parse(
+        new TextDecoder().decode(fileContent),
+      ) as FileOutputType;
+    } catch (_) {
+      Deno.removeSync(filePath);
+    }
   } catch (error) {
-    console.error(chalk.red("Error saving results to file:"), error);
+    if (error instanceof Deno.errors.NotFound) {
+      existingData.requests = [];
+    } else {
+      console.error(chalk.red("Error reading existing file:"), error);
+      return;
+    }
   }
+  existingData.requests.push(message);
+
+  Deno.writeFileSync(
+    filePath,
+    new TextEncoder().encode(JSON.stringify(existingData, null, 2)),
+  );
 }
 
 function shouldPrintResponse(response: FuzzWorkerResponse): boolean {
+  if (userArgs.status_filter[0] === 0) {
+    return true;
+  }
+
   return userArgs.status_filter.includes(response.status);
 }

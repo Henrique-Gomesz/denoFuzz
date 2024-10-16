@@ -53,7 +53,7 @@ export function parseArgs(): Args {
   });
   parser.add_argument("-sf", "--status-filter", {
     help:
-      "List of response status code to be filtered (default: 200,204,301,302,307,401,403,405,500,503)",
+      "List of response status code to be filtered (default: 200,204,301,302,307,401,403,405,500,503). In order to match all status code provide '-sf 0' flag",
     nargs: "+",
     type: "int",
     default: [200, 204, 301, 302, 307, 401, 403, 405, 500, 503],

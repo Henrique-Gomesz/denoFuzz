@@ -64,15 +64,17 @@ export function vaildateThreads(threads: number): boolean {
 }
 
 export function validateStatusCodeList(responseFilter: number[]): boolean {
-  responseFilter.forEach((code) => {
-    if (code < 100 || code > 599) {
-      console.log(
-        chalk.redBright("Response filter values must be between 100 and 599\n"),
-      );
-      return false;
-    }
-  });
+  if (responseFilter[0] === 0) {
+    return true;
+  }
 
+  const filtered = responseFilter.filter((code) => code < 100 || code > 599);
+  if (filtered.length > 0) {
+    console.log(
+      chalk.redBright("Response filter values must be between 100 and 599\n"),
+    );
+    return false;
+  }
   return true;
 }
 
