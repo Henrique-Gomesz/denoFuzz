@@ -51,7 +51,7 @@ optional arguments:
 
 ## Requirements
 
-- [Deno](https://deno.land/) v2.0.0 or higher
+- [Deno](https://deno.land/)
 
 ## Installation
 
